@@ -184,8 +184,17 @@ impl<'a> CodeGenerator<'a> {
         self.append_doc(&fq_message_name, None);
         self.append_type_attributes(&fq_message_name);
         self.push_indent();
-        self.buf
-            .push_str("#[derive(Clone, PartialEq, ::prost::Message)]\n");
+        if self
+            .config
+            .disable_partial_eq
+            .get_first(&fq_message_name)
+            .is_some()
+        {
+            self.buf.push_str("#[derive(Clone, ::prost::Message)]\n");
+        } else {
+            self.buf
+                .push_str("#[derive(Clone, PartialEq, ::prost::Message)]\n");
+        }
         self.push_indent();
         self.buf.push_str("pub struct ");
         self.buf.push_str(&to_upper_camel(&message_name));

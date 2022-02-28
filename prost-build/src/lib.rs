@@ -235,6 +235,7 @@ pub struct Config {
     disable_comments: PathMap<()>,
     skip_protoc_run: bool,
     include_file: Option<PathBuf>,
+    disable_partial_eq: PathMap<bool>,
 }
 
 impl Config {
@@ -444,6 +445,16 @@ impl Config {
     {
         self.type_attributes
             .insert(path.as_ref().to_string(), attribute.as_ref().to_string());
+        self
+    }
+
+    /// Disable deriving `PartialEq` trait.
+    pub fn disable_partial_eq_derive<P>(&mut self, path: P) -> &mut Self
+    where
+        P: AsRef<str>,
+    {
+        self.disable_partial_eq
+            .insert(path.as_ref().to_string(), true);
         self
     }
 
@@ -1007,6 +1018,7 @@ impl default::Default for Config {
             disable_comments: PathMap::default(),
             skip_protoc_run: false,
             include_file: None,
+            disable_partial_eq: PathMap::default(),
         }
     }
 }
